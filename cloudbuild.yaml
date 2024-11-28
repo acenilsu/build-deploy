@@ -2,15 +2,13 @@ steps:
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
     args: [
-            'build',
-            '-t',
-            'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${SHORT_SHA}',
-            '-t',
-            'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:latest',
-            '--cache-from',
-            'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:latest',
-            '.'
-          ]
+      'build',
+      '-t', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${SHORT_SHA}',
+      '-t', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:latest',
+      '--cache-from', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:latest',
+      '.'
+    ]
+    dir: 'kuard'
 
   # Docker push to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
