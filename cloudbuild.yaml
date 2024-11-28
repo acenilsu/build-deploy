@@ -1,0 +1,18 @@
+steps:
+  # Docker imajını build etme 
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:latest'
+      - '.'
+    dir: '.'
+
+  # Docker imajını Artifact Registry'e pushlama
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:latest'
+
+images:
+  - 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:latest'
