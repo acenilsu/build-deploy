@@ -1,6 +1,7 @@
 steps:
-  # Docker Build
+  # Kuard Docker imajını oluştur
   - name: 'gcr.io/cloud-builders/docker'
+    id: 'Build Kuard Image'
     args: [
       'build',
       '-t', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${SHORT_SHA}',
@@ -10,33 +11,54 @@ steps:
     ]
     dir: 'kuard'
 
-  # Docker push to Google Artifact Registry
+  # Kuard Docker imajını Artifact Registry'ye gönder
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${SHORT_SHA}']
+    id: 'Push Kuard Image'
+    args: [
+      'push',
+      'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${SHORT_SHA}'
+    ]
 
-    # Google Cloud Deploy Pipeline ve Release Yönetimi
+  # Dev ortamı için hedef tanımla
   - name: 'google/cloud-sdk:latest'
+    id: 'Define Dev Target'
     entrypoint: 'sh'
     args:
-    - -xe
     - -c
     - |
-      # Delivery Pipeline oluştur
-      gcloud deploy apply --file deploy/pipeline.yaml --region=europe-west3
-      
-      # Dev ortamı için hedef tanımla
       gcloud deploy apply --file deploy/dev.yaml --region=europe-west3
 
-      # Prod ortamı için hedef tanımla
+  # Prod ortamı için hedef tanımla
+  - name: 'google/cloud-sdk:latest'
+    id: 'Define Prod Target'
+    entrypoint: 'sh'
+    args:
+    - -c
+    - |
       gcloud deploy apply --file deploy/prod.yaml --region=europe-west3
-      
-      # Release oluştur ve pipeline'a bağla
+
+  # Delivery Pipeline'ı oluştur
+  - name: 'google/cloud-sdk:latest'
+    id: 'Setup Delivery Pipeline'
+    entrypoint: 'sh'
+    args:
+    - -c
+    - |
+      gcloud deploy apply --file deploy/pipeline.yaml --region=europe-west3
+
+  # Release oluştur ve pipeline'a bağla
+  - name: 'google/cloud-sdk:latest'
+    id: 'Create Deployment Release'
+    entrypoint: 'sh'
+    args:
+    - -c
+    - |
       gcloud deploy releases create 'app-release-${SHORT_SHA}' \
         --delivery-pipeline=gke-cicd-pipeline \
         --region=europe-west3 \
         --skaffold-file=skaffold.yaml
 
-# Store images in Google Artifact Registry 
+# Artifact Registry'ye gönderilecek imajlar
 images:
   - 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${SHORT_SHA}'
   - 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:latest'
