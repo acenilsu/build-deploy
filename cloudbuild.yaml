@@ -14,7 +14,33 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${SHORT_SHA}']
 
+    # Google Cloud Deploy Pipeline ve Release Yönetimi
+  - name: 'google/cloud-sdk:latest'
+    entrypoint: 'sh'
+    args:
+    - -xe
+    - -c
+    - |
+      # Delivery Pipeline oluştur
+      gcloud deploy apply --file deploy/pipeline.yaml --region=europe-west3
+      
+      # Dev ortamı için hedef tanımla
+      gcloud deploy apply --file deploy/dev.yaml --region=europe-west3
+
+      # Prod ortamı için hedef tanımla
+      gcloud deploy apply --file deploy/prod.yaml --region=europe-west3
+      
+      # Release oluştur ve pipeline'a bağla
+      gcloud deploy releases create 'app-release-${SHORT_SHA}' \
+        --delivery-pipeline=gke-cicd-pipeline \
+        --region=europe-west3 \
+        --skaffold-file=skaffold.yaml
+
 # Store images in Google Artifact Registry 
 images:
   - 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${SHORT_SHA}'
   - 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:latest'
+
+# Loglama ayarları
+options:
+  logging: CLOUD_LOGGING_ONLY
