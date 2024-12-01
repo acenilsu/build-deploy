@@ -134,7 +134,7 @@ kind: Deployment
 metadata:
   name: nilsu-deployment
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: nilsu-app
@@ -148,6 +148,26 @@ spec:
           image: europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/deploy-image
           ports:
             - containerPort: 8080
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"  
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+        
 ---
 # Servic
 apiVersion: v1
