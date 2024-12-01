@@ -77,3 +77,19 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/deploy-image' ]
   id: 'Push Docker Image'
+
+
+- name: 'google/cloud-sdk:latest'
+  entrypoint: 'sh'
+  args:
+  - -xe
+  - -c
+  - |
+    gcloud deploy apply --file deploy/pipeline.yaml --region=europe-west3
+    gcloud deploy apply --file deploy/dev.yaml --region=europe-west3
+    gcloud deploy apply --file deploy/prod.yaml --region=europe-west3
+    gcloud deploy releases create 'app-release-${SHORT_SHA}' --delivery-pipeline=gke-cicd-pipeline --region=europe-west3 --skaffold-file=skaffold.yaml
+
+
+options:
+  logging: CLOUD_LOGGING_ONLY

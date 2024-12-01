@@ -1,127 +1,164 @@
-# Deployment Config
+## Deployment Config
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: kuard
+#  namespace: kuard-dev # Dev için ayrı, prod için ayrı namespace kullanılabilir
+#  labels:
+#    app: kuard
+#    environment: dev # dev/prod ayrımı için
+#spec:
+#  replicas: 2 # Dev ortamı için 2; prod için bu sayı artırılabilir
+#  selector:
+#    matchLabels:
+#      app: kuard
+#  template:
+#    metadata:
+#      labels:
+#        app: kuard
+#        environment: dev # dev/prod ayrımı için
+#    spec:
+#      containers:
+#      - name: kuard
+#        image: europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${TAG_NAME}
+#        ports:
+#        - containerPort: 8080
+#        resources:
+#          requests:
+#            memory: "128Mi"
+#            cpu: "250m"
+#          limits:
+#            memory: "256Mi"
+#            cpu: "500m"
+#        readinessProbe:
+#          httpGet:
+#            path: /
+#            port: 8080
+#          initialDelaySeconds: 5
+#          periodSeconds: 10
+#        livenessProbe:
+#          httpGet:
+#            path: /
+#            port: 8080
+#          initialDelaySeconds: 5
+#          periodSeconds: 10
+#
+#---
+## Service Config
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: kuard-service
+#  namespace: kuard-dev # Dev için ayrı, prod için ayrı namespace kullanılabilir
+#  labels:
+#    app: kuard
+#    environment: dev # dev/prod ayrımı için
+#spec:
+#  type: LoadBalancer # Dev ortamında ClusterIP kullanılabilir
+#  ports:
+#  - port: 80
+#    targetPort: 8080
+#  selector:
+#    app: kuard
+#    environment: dev # dev/prod ayrımı için
+#---
+## Deployment Config for Prod
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: kuard
+#  namespace: kuard-prod # Prod için ayrı namespace
+#  labels:
+#    app: kuard
+#    environment: prod
+#spec:
+#  replicas: 5 # Prod ortamında daha fazla replika
+#  selector:
+#    matchLabels:
+#      app: kuard
+#  template:
+#    metadata:
+#      labels:
+#        app: kuard
+#        environment: prod
+#    spec:
+#      containers:
+#      - name: kuard
+#        image: europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${TAG_NAME}
+#        ports:
+#        - containerPort: 8080
+#        resources:
+#          requests:
+#            memory: "256Mi"
+#            cpu: "500m"
+#          limits:
+#            memory: "512Mi"
+#            cpu: "1"
+#        readinessProbe:
+#          httpGet:
+#            path: /
+#            port: 8080
+#          initialDelaySeconds: 5
+#          periodSeconds: 10
+#        livenessProbe:
+#          httpGet:
+#            path: /
+#            port: 8080
+#          initialDelaySeconds: 5
+#          periodSeconds: 10
+#
+#---
+## Service Config for Prod
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: kuard-service
+#  namespace: kuard-prod
+#  labels:
+#    app: kuard
+#    environment: prod
+#spec:
+#  type: LoadBalancer
+#  ports:
+#  - port: 80
+#    targetPort: 8080
+#  selector:
+#    app: kuard
+#    environment: prod
+#
+
+
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kuard
-  namespace: kuard-dev # Dev için ayrı, prod için ayrı namespace kullanılabilir
-  labels:
-    app: kuard
-    environment: dev # dev/prod ayrımı için
+  name: nilsu-deployment
 spec:
-  replicas: 2 # Dev ortamı için 2; prod için bu sayı artırılabilir
+  replicas: 1
   selector:
     matchLabels:
-      app: kuard
+      app: nilsu-app
   template:
     metadata:
       labels:
-        app: kuard
-        environment: dev # dev/prod ayrımı için
+        app: nilsu-app
     spec:
       containers:
-      - name: kuard
-        image: europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${TAG_NAME}
-        ports:
-        - containerPort: 8080
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "250m"
-          limits:
-            memory: "256Mi"
-            cpu: "500m"
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 10
-
+        - name: my-container
+          image: europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/deploy-image
+          ports:
+            - containerPort: 8080
 ---
-# Service Config
+# Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: kuard-service
-  namespace: kuard-dev # Dev için ayrı, prod için ayrı namespace kullanılabilir
-  labels:
-    app: kuard
-    environment: dev # dev/prod ayrımı için
+  name: nilsu-service
 spec:
-  type: LoadBalancer # Dev ortamında ClusterIP kullanılabilir
+  selector:
+    app: nilsu-app
   ports:
-  - port: 80
-    targetPort: 8080
-  selector:
-    app: kuard
-    environment: dev # dev/prod ayrımı için
----
-# Deployment Config for Prod
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: kuard
-  namespace: kuard-prod # Prod için ayrı namespace
-  labels:
-    app: kuard
-    environment: prod
-spec:
-  replicas: 5 # Prod ortamında daha fazla replika
-  selector:
-    matchLabels:
-      app: kuard
-  template:
-    metadata:
-      labels:
-        app: kuard
-        environment: prod
-    spec:
-      containers:
-      - name: kuard
-        image: europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${TAG_NAME}
-        ports:
-        - containerPort: 8080
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "500m"
-          limits:
-            memory: "512Mi"
-            cpu: "1"
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 10
-
----
-# Service Config for Prod
-apiVersion: v1
-kind: Service
-metadata:
-  name: kuard-service
-  namespace: kuard-prod
-  labels:
-    app: kuard
-    environment: prod
-spec:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
   type: LoadBalancer
-  ports:
-  - port: 80
-    targetPort: 8080
-  selector:
-    app: kuard
-    environment: prod
