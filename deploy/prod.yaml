@@ -7,4 +7,4 @@ metadata:
 description: prod
 requireApproval: true
 gke:
-  cluster: projects/ace-anthos-poc/locations/	europe-west3-c/clusters/clouddeploy-prod-cluster
+  cluster: projects/ace-anthos-poc/locations/europe-west3-c/clusters/clouddeploy-prod-cluster
