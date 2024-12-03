@@ -1,8 +1,13 @@
 # STAGE 1: Build
-FROM golang:1.12-alpine AS build
+FROM golang:1.21-alpine AS build  
 
-# Install Node and NPM.
-RUN apk update && apk upgrade && apk add --no-cache git nodejs bash npm
+# Install Node, NPM, ve gerekli araçlar
+RUN apk update && apk upgrade && apk add --no-cache \
+    git \
+    nodejs \
+    bash \
+    npm \
+    dos2unix  # dos2unix, Windows tarzı satır sonlarını temizlemek için gerekli
 
 # Get dependencies for Go part of build
 RUN go get -u github.com/jteeuwen/go-bindata/...
@@ -26,7 +31,10 @@ RUN chmod +x build/build.sh
 RUN build/build.sh
 
 # STAGE 2: Runtime
-FROM alpine
+FROM alpine:latest 
+
+# Install runtime dependencies
+RUN apk update && apk add --no-cache ca-certificates
 
 USER nobody:nobody
 COPY --from=build /go/bin/kuard /kuard
