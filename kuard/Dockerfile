@@ -22,6 +22,7 @@ ENV VERSION=test
 RUN dos2unix build/build.sh
 
 # Do the build. Script is part of incoming sources.
+RUN chmod +x build/build.sh
 RUN build/build.sh
 
 # STAGE 2: Runtime
