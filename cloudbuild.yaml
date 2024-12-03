@@ -1,81 +1,10 @@
-#steps:
-#  # Kuard Docker imajını oluştur
-#  - name: 'gcr.io/cloud-builders/docker'
-#    id: 'Build Kuard Image'
-#    args: [
-#      'build',
-#      '-t', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${SHORT_SHA}',
-#      '-t', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:latest',
-#      '--cache-from', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:latest',
-#      '.'
-#    ]
-#    dir: 'kuard'
-#
-#  # Kuard Docker imajını Artifact Registry'ye gönder
-#  - name: 'gcr.io/cloud-builders/docker'
-#    id: 'Push Kuard Image'
-#    args: [
-#      'push',
-#      'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${SHORT_SHA}'
-#    ]
-#
-#  # Dev ortamı için hedef tanımla
-#  - name: 'google/cloud-sdk:latest'
-#    id: 'Define Dev Target'
-#    entrypoint: 'sh'
-#    args:
-#    - -c
-#    - |
-#      gcloud deploy apply --file deploy/dev.yaml --region=europe-west3
-#
-#  # Prod ortamı için hedef tanımla
-#  - name: 'google/cloud-sdk:latest'
-#    id: 'Define Prod Target'
-#    entrypoint: 'sh'
-#    args:
-#    - -c
-#    - |
-#      gcloud deploy apply --file deploy/prod.yaml --region=europe-west3
-#
-#  # Delivery Pipeline'ı oluştur
-#  - name: 'google/cloud-sdk:latest'
-#    id: 'Setup Delivery Pipeline'
-#    entrypoint: 'sh'
-#    args:
-#    - -c
-#    - |
-#      gcloud deploy apply --file deploy/pipeline.yaml --region=europe-west3
-#
-#  # Release oluştur ve pipeline'a bağla
-#  - name: 'google/cloud-sdk:latest'
-#    id: 'Create Deployment Release'
-#    entrypoint: 'sh'
-#    args:
-#    - -c
-#    - |
-#      gcloud deploy releases create 'app-release-${SHORT_SHA}' \
-#        --delivery-pipeline=gke-cicd-pipeline \
-#        --region=europe-west3 \
-#        --skaffold-file=skaffold.yaml
-#
-## Artifact Registry'ye gönderilecek imajlar
-#images:
-#  - 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:${SHORT_SHA}'
-#  - 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard:latest'
-#
-## Loglama ayarları
-#options:
-#  logging: CLOUD_LOGGING_ONLY
-#
-
-
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/deploy-image', './app1' ]
+  args: ['build', '-t', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/deploy-image', './kuard' ]
   id: 'Build Docker Image'
 
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/deploy-image' ]
+  args: ['push', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard-image' ]
   id: 'Push Docker Image'
 
 
@@ -87,9 +16,10 @@ steps:
   - |
     gcloud deploy apply --file deploy/pipeline.yaml --region=europe-west3
     gcloud deploy apply --file deploy/dev.yaml --region=europe-west3
-    gcloud deploy apply --file deploy/prod.yaml --region=europe-west3
     gcloud deploy releases create 'app-release-${SHORT_SHA}' --delivery-pipeline=gke-cicd-pipeline --region=europe-west3 --skaffold-file=skaffold.yaml
 
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
+#    gcloud deploy apply --file deploy/prod.yaml --region=europe-west3
