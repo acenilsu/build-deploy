@@ -1,6 +1,6 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard-image', './kuard' ]
+  args: ['build', '--progress=plain', '--no-cache', '-t', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/deploy-image', './kuard']
   id: 'Build Docker Image'
 
 - name: 'gcr.io/cloud-builders/docker'
