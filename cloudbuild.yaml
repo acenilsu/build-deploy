@@ -1,6 +1,9 @@
 steps:
+- name: 'node:16'
+  entrypoint: 'bash'
+  args: ['-c', 'npm install && npm run build']
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '--progress=plain', '--no-cache', '-t', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/deploy-image', './kuard']
+  args: ['build', '-t', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/-image', './kuard' ]
   id: 'Build Docker Image'
 
 - name: 'gcr.io/cloud-builders/docker'
