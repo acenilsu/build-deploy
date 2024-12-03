@@ -144,29 +144,10 @@ spec:
         app: nilsu-app
     spec:
       containers:
-        - name: my-container
+        - name: nilsu-container
           image: europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/deploy-image
           ports:
             - containerPort: 8080
-          resources:
-            requests:
-              cpu: "100m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"  
-#          readinessProbe:
-#            httpGet:
-#              path: /
-#              port: 8080
-#            initialDelaySeconds: 5
-#            periodSeconds: 10
-#          livenessProbe:
-#            httpGet:
-#              path: /
-#              port: 8080
-#            initialDelaySeconds: 5
-#            periodSeconds: 10
-        
 ---
 # Servic
 apiVersion: v1
