@@ -1,6 +1,6 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/-image', './kuard' ]
+  args: ['build', '-t', 'europe-west3-docker.pkg.dev/ace-anthos-poc/cloud-deploy-repo/kuard-image', './kuard' ]
   id: 'Build Docker Image'
 
 - name: 'gcr.io/cloud-builders/docker'
@@ -22,4 +22,4 @@ steps:
 options:
   logging: CLOUD_LOGGING_ONLY
 
-#    gcloud deploy apply --file deploy/prod.yaml --region=europe-west3
+  #    gcloud deploy apply --file deploy/prod.yaml --region=europe-west3
