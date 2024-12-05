@@ -1,33 +1,31 @@
 # STAGE 1: Build
-FROM golang:1.20-alpine AS build
+FROM --platform=linux/amd64 golang:1.12-alpine AS build
 
-# Gerekli bağımlılıkları kur
-RUN apk update && apk add --no-cache git bash nodejs npm icu-data-full
+# Install Node and NPM.
+RUN apk update && apk upgrade && apk add --no-cache git nodejs bash npm
 
-# Ortam değişkenlerini tanımla
-ENV NODE_OPTIONS=--openssl-legacy-provider
-ENV GO111MODULE=on
-
-# go-bindata ve bağımlılıkları kur
-RUN go install github.com/go-bindata/go-bindata/...@latest
+# Get dependencies for Go part of build
+RUN go get -u github.com/jteeuwen/go-bindata/...
 
 WORKDIR /go/src/github.com/kubernetes-up-and-running/kuard
 
-# Kaynakları kopyala
+# Copy all sources in
 COPY . .
 
-# Node.js bağımlılıklarını yükle
-WORKDIR /go/src/github.com/kubernetes-up-and-running/kuard/client
-RUN npm install
-RUN npm run build
+# This is a set of variables that the build script expects
+ENV VERBOSE=0
+ENV PKG=github.com/kubernetes-up-and-running/kuard
+ENV ARCH=amd64
+ENV VERSION=test
 
-# Go uygulamasını derle
-WORKDIR /go/src/github.com/kubernetes-up-and-running/kuard
-RUN chmod +x build/build.sh
-RUN ./build/build.sh
+# When running on Windows 10, you need to clean up the ^Ms in the script
+RUN dos2unix build/build.sh
+
+# Do the build. Script is part of incoming sources.
+RUN build/build.sh
 
 # STAGE 2: Runtime
-FROM alpine:latest
+FROM --platform=linux/amd64 alpine
 
 USER nobody:nobody
 COPY --from=build /go/bin/kuard /kuard
