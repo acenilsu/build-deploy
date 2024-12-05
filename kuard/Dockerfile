@@ -1,40 +1,29 @@
 # STAGE 1: Build
-FROM golang:1.21-alpine AS build  
+FROM golang:1.20-alpine AS build
 
-# Install Node, NPM, ve gerekli araçlar
-RUN apk update && apk upgrade && apk add --no-cache \
-    git \
-    nodejs \
-    bash \
-    npm \
-    dos2unix  # dos2unix, Windows tarzı satır sonlarını temizlemek için gerekli
+# Gerekli bağımlılıkları kur
+RUN apk update && apk add --no-cache git bash npm
 
-# Get dependencies for Go part of build
-RUN go get -u github.com/jteeuwen/go-bindata/...
+# go-bindata'yı kur
+RUN go install github.com/go-bindata/go-bindata/...@latest
 
 WORKDIR /go/src/github.com/kubernetes-up-and-running/kuard
 
-# Copy all sources in
+# Kaynakları kopyala
 COPY . .
 
-# This is a set of variables that the build script expects
+# Ortam değişkenlerini tanımla
 ENV VERBOSE=0
 ENV PKG=github.com/kubernetes-up-and-running/kuard
 ENV ARCH=amd64
 ENV VERSION=test
 
-# When running on Windows 10, you need to clean up the ^Ms in the script
-RUN dos2unix build/build.sh
-
-# Do the build. Script is part of incoming sources.
+# Derleme komutlarını çalıştır
 RUN chmod +x build/build.sh
 RUN build/build.sh
 
 # STAGE 2: Runtime
-FROM alpine:latest 
-
-# Install runtime dependencies
-RUN apk update && apk add --no-cache ca-certificates
+FROM alpine:latest
 
 USER nobody:nobody
 COPY --from=build /go/bin/kuard /kuard
