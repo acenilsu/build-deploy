@@ -2,9 +2,9 @@
 FROM golang:1.20-alpine AS build
 
 # Gerekli bağımlılıkları kur
-RUN apk update && apk add --no-cache git bash nodejs npm
+RUN apk update && apk add --no-cache git bash nodejs npm icu-data-full
 
-# Ortam değişkenlerini ayarla
+# Ortam değişkenlerini tanımla
 ENV NODE_OPTIONS=--openssl-legacy-provider
 ENV GO111MODULE=on
 
@@ -13,7 +13,7 @@ RUN go install github.com/go-bindata/go-bindata/...@latest
 
 WORKDIR /go/src/github.com/kubernetes-up-and-running/kuard
 
-# Kaynak dosyaları kopyala
+# Kaynakları kopyala
 COPY . .
 
 # Node.js bağımlılıklarını yükle
