@@ -16,8 +16,7 @@ steps:
 #    gcloud deploy apply --file deploy/pipeline.yaml --region=europe-west3
 #    gcloud deploy apply --file deploy/dev.yaml --region=europe-west3
 #    gcloud deploy releases create 'app-release-${SHORT_SHA}' --delivery-pipeline=gke-cicd-pipeline --region=europe-west3 --skaffold-file=skaffold.yaml
-#
-#
+
 options:
   logging: CLOUD_LOGGING_ONLY
 #
