@@ -1,0 +1,32 @@
+name: Build and Push to Artifact Registry
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: "projects/669714256369/locations/global/workloadIdentityPools/github-identity-pool/providers/github-provider"
+          service_account: "github-runner@ace-team-nilsu-service.iam.gserviceaccount.com"
+    
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Authenticate Docker with GCP Artifact Registry
+        run: gcloud auth configure-docker europe-west3-docker.pkg.dev
+
+      - name: Build Docker Image
+        run: docker build -t REGION-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest .
+
+      - name: Push Docker Image to Artifact Registry
+        run: docker push REGION-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest
