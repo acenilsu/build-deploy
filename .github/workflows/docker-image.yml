@@ -30,7 +30,7 @@ jobs:
         run: gcloud auth configure-docker europe-west3-docker.pkg.dev
 
       - name: Build Docker Image
-        run: docker build -t REGION-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest .
+        run: docker build -t europe-west3-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest .
 
       - name: Push Docker Image to Artifact Registry
-        run: docker push REGION-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest
+        run: docker push europe-west3-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest
