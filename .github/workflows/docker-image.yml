@@ -36,6 +36,17 @@ jobs:
       - name: Build Docker Image
         run: docker build -t europe-west3-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest .
 
+
+      - name: SSH into VM and update packages
+        env:
+          VM_NAME: ${{ secrets.GCP_VM_NAME }}
+          VM_ZONE: ${{ secrets.GCP_VM_ZONE }}
+        run: |
+          gcloud compute ssh $VM_NAME \
+            --zone=$VM_ZONE \
+            --tunnel-through-iap \
+            --command="sudo apt update"  
+
       - name: Push Docker Image to Artifact Registry
         run: docker push europe-west3-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest
 
