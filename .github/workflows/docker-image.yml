@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+
+steps:
+
+      
       
 permissions:
   contents: "read"
@@ -15,14 +19,16 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-
       - id: "auth"
         name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: "projects/669714256369/locations/global/workloadIdentityPools/github-identity-pool/providers/github-provider"
           service_account: "github-runner@ace-team-nilsu-service.iam.gserviceaccount.com"
-     
+
+      - name: Decode OIDC Token
+        run: |
+         echo "${{ steps.generate_oidc_token.outputs.token }}" | base64 -d | jq .     
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
