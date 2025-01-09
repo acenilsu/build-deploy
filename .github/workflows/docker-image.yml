@@ -23,8 +23,8 @@ jobs:
         name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@v2"
         with:
-          workload_identity_provider: "projects/669714256369/locations/global/workloadIdentityPools/github-identity-pool/providers/github-provider"
-          service_account: "github-runner@ace-team-nilsu-service.iam.gserviceaccount.com"
+          workload_identity_provider: "projects/669714256369/locations/global/workloadIdentityPools/github-wi-pool/providers/github-wi-pool-provider"
+          service_account: "githubactions@ace-team-nilsu-service.iam.gserviceaccount.com"
 
       - name: Decode OIDC Token
         run: |
