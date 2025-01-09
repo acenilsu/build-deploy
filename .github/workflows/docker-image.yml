@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-
-steps:
-
-      
       
 permissions:
   contents: "read"
