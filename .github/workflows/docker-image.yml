@@ -39,6 +39,9 @@ jobs:
      #   run: |
      #    gcloud components install beta --quiet
 
+  create-directory:
+      runs-on: ubuntu-latest
+      steps:
       - name: Debug SSH Setup
         run: |
           echo "Setting up SSH directory..."
@@ -47,10 +50,6 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           echo "Checking SSH key..."
           ssh-keygen -l -f ~/.ssh/deploy_key || echo "Invalid key format" 
-
-  create-directory:
-      runs-on: ubuntu-latest
-      steps:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -74,5 +73,5 @@ jobs:
       #      --command="
       #        sudo mkdir -p nilsu && \
       #        sudo touch nilsu/test2.yaml"
-      - name: Push Docker Image to Artifact Registry
-        run: docker push europe-west3-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest
+     # - name: Push Docker Image to Artifact Registry
+     #   run: docker push europe-west3-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest
