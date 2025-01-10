@@ -40,6 +40,7 @@ jobs:
           zone: 'europe-west3'
           ssh_private_key: '${{ secrets.GCP_SSH_PRIVATE_KEY }}'
           command: 'echo Hello world'
+          user: 'nilsu_sonmez'
 
     # Example of using the output
       - id: 'test'
