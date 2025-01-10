@@ -34,7 +34,10 @@ jobs:
 
       - name: Build Docker Image
         run: docker build -t europe-west3-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest .
-
+     
+      - name: Install required components
+        run: |
+          gcloud components install beta --quiet
       # SSH bağlantısı ve container güncelleme
       - name: SSH into VM and update container
         env:
