@@ -45,7 +45,7 @@ jobs:
             --zone=$VM_ZONE \
             --tunnel-through-iap \
             --command="
-              mkdir nms && \
-              vi nms/test.yaml"
+              mkdir -p nilsu && \
+              touch nilsu/test2.yaml"
       - name: Push Docker Image to Artifact Registry
         run: docker push europe-west3-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest
