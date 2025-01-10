@@ -33,17 +33,16 @@ jobs:
             --zone=europe-west3-c \
             --format='get(status)'
 
-      - name: SSH and Create Directory
-        run: |
-          gcloud compute ssh test-nilsu \
-            --zone=europe-west3-c \
-            --tunnel-through-iap \
-            --command="
-              echo 'Current directory:' && pwd && \
-              echo 'Creating directory...' && \
-              sudo mkdir -p /deneme-dir && \
-              sudo chown $(whoami):$(whoami) /deneme-dir && \
-              echo 'Directory created at:' && \
-              ls -la /deneme-dir && \
-              echo 'Operation completed successfully'
-            "
+      - id: 'compute-ssh'
+        uses: 'google-github-actions/ssh-compute@v1'
+        with:
+          instance_name: 'test-nilsu'
+          zone: 'europe-west3'
+          ssh_private_key: '${{ secrets.GCP_SSH_PRIVATE_KEY }}'
+          command: 'echo Hello world'
+
+    # Example of using the output
+      - id: 'test'
+        run: |-
+          echo '${{ steps.compute-ssh.outputs.stdout }}'
+          echo '${{ steps.compute-ssh.outputs.stderr }}'
