@@ -40,7 +40,7 @@ jobs:
           instance_name: 'test-nilsu'
           zone: 'europe-west3-c'
           ssh_private_key: '${{ secrets.SSH_PRIVATE_KEY }}'
-          command: 'echo Hello world'
+          command: 'echo Hello && whoami && mkdir nilsu-github-test'
           user: 'nilsu_sonmez'
 
     # Example of using the output
