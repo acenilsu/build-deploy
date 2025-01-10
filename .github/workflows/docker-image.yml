@@ -35,10 +35,20 @@ jobs:
       - name: Build Docker Image
         run: docker build -t europe-west3-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest .
      
-      - name: Install required components
+     # - name: Install required components
+     #   run: |
+     #    gcloud components install beta --quiet
+
+      - name: Debug SSH Setup
         run: |
-          gcloud components install beta --quiet
-      # SSH bağlantısı ve container güncelleme
+          echo "Setting up SSH directory..."
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo "Checking SSH key..."
+          ssh-keygen -l -f ~/.ssh/deploy_key || echo "Invalid key format" 
+          
+       #SSH bağlantısı ve container güncelleme
       - name: SSH into VM and update container
         env:
           VM_NAME: ${{ secrets.GCP_VM_NAME }}
