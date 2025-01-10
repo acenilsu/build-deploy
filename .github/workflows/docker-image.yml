@@ -1,5 +1,6 @@
 name: Create Directory on GCP VM
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
