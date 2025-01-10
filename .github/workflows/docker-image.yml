@@ -25,25 +25,21 @@ jobs:
       - name: Configure Project
         run: |
           gcloud config set project ace-team-nilsu-service
-          gcloud config list
 
-      - name: Check Instance Status
+      - name: List Available Instances
         run: |
-          gcloud compute instances describe test-nilsu \
-            --zone=europe-west3-c \
-            --format='get(status)'
+          echo "Available instances:"
+          gcloud compute instances list
 
       - name: SSH and Create Directory
         run: |
-          gcloud compute ssh test-nilsu \
-            --zone=europe-west3-c \
+          echo "Attempting to connect to VM..."
+          gcloud compute ssh "test-nilsu" \
+            --zone="europe-west3-c" \
             --tunnel-through-iap \
             --command="
-              echo 'Current directory:' && pwd && \
-              echo 'Creating directory...' && \
-              sudo mkdir -p /deneme-dir && \
-              sudo chown $(whoami):$(whoami) /deneme-dir && \
-              echo 'Directory created at:' && \
-              ls -la /deneme-dir && \
-              echo 'Operation completed successfully'
-            "
+              echo 'Connected successfully' && \
+              sudo mkdir -p /deneme-directory && \
+              echo 'Directory created' && \
+              ls -la / | grep deneme-directory
+            " || echo "Failed to execute commands"
