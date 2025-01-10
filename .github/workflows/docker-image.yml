@@ -1,5 +1,4 @@
 name: Build and Push to Artifact Registry
-
 on:
   push:
     branches:
@@ -36,8 +35,8 @@ jobs:
       - name: Build Docker Image
         run: docker build -t europe-west3-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest .
 
-
-      - name: SSH into VM and update packages
+      # SSH bağlantısı ve container güncelleme
+      - name: SSH into VM and update container
         env:
           VM_NAME: ${{ secrets.GCP_VM_NAME }}
           VM_ZONE: ${{ secrets.GCP_VM_ZONE }}
@@ -45,8 +44,11 @@ jobs:
           gcloud compute ssh $VM_NAME \
             --zone=$VM_ZONE \
             --tunnel-through-iap \
-            --command="sudo apt-get update && sudo apt-get upgrade -y"
+            --command="
+              sudo docker pull europe-west3-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest && \
+              sudo docker stop hello-world || true && \
+              sudo docker rm hello-world || true && \
+              sudo docker run -d --name hello-world -p 80:80 europe-west3-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest"
 
       - name: Push Docker Image to Artifact Registry
         run: docker push europe-west3-docker.pkg.dev/ace-team-nilsu-service/helloworld-images/hello-world:latest
-
