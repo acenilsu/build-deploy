@@ -41,7 +41,7 @@ jobs:
           VM_NAME: ${{ secrets.GCP_VM_NAME }}
           VM_ZONE: ${{ secrets.GCP_VM_ZONE }}
         run: |
-          gcloud compute beta ssh $VM_NAME \
+          gcloud beta compute ssh $VM_NAME \
             --zone=$VM_ZONE \
             --tunnel-through-iap \
             --command="
